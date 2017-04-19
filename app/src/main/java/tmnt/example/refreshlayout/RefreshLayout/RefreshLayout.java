@@ -228,6 +228,7 @@ public class RefreshLayout extends ViewGroup {
         isCanLoad = canLoad;
     }
 
+
     private void headerRecover() {
         Log.i(TAG, "setLoadOver: " + mScroller.getCurrY());
         mScroller.startScroll(0, mScroller.getCurrY()

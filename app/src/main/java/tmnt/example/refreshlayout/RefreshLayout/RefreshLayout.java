@@ -3,6 +3,7 @@ package tmnt.example.refreshlayout.RefreshLayout;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.widget.RecyclerView;
 import android.test.suitebuilder.TestMethod;
 import android.text.LoginFilter;
 import android.util.AttributeSet;
@@ -11,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -52,6 +55,8 @@ public class RefreshLayout extends ViewGroup {
     private int y;
 
     private RefreshHandler handler = new RefreshHandler();
+    private int mLastMotionY;
+    private int mLastMotionX;
 
     public RefreshLayout(Context context) {
         super(context);
@@ -119,6 +124,41 @@ public class RefreshLayout extends ViewGroup {
                 child.layout(0, mContentHeight, child.getMeasuredWidth(), mContentHeight + child.getMeasuredHeight());
             }
         }
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        int y = (int) ev.getRawY();
+        int x = (int) ev.getRawX();
+        boolean resume = false;
+        switch (ev.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                // 发生down事件时,记录y坐标
+                mLastMotionY = y;
+                mLastMotionX = x;
+                resume = false;
+                break;
+            case MotionEvent.ACTION_MOVE:
+                View v = getChildAt(0);
+                if (v instanceof AbsListView) {
+                    AbsListView absListView = (AbsListView) v;
+                    if (absListView.getFirstVisiblePosition() == 0 ||
+                            absListView.getLastVisiblePosition() == absListView.getAdapter().getCount() - 1) {
+                        resume = true;
+                    }
+                } else if (v instanceof RecyclerView) {
+                    RecyclerView recyclerView = (RecyclerView) v;
+                    if (!recyclerView.canScrollVertically(1) || !recyclerView.canScrollVertically(-1)) {
+                        resume = true;
+                    }
+                }
+
+                break;
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+                break;
+        }
+        return resume;
     }
 
     @Override
@@ -193,9 +233,9 @@ public class RefreshLayout extends ViewGroup {
             postInvalidate();
             if (mScroller.isFinished()) {
                 if (mOnRefreshListener != null) {
-                    if (pbHeader.getVisibility()==VISIBLE) {
+                    if (pbHeader.getVisibility() == VISIBLE) {
                         mOnRefreshListener.onRefresh();
-                    } else if (pbFooter.getVisibility()==VISIBLE) {
+                    } else if (pbFooter.getVisibility() == VISIBLE) {
                         mOnRefreshListener.onLoad();
                     }
                 }
@@ -254,7 +294,7 @@ public class RefreshLayout extends ViewGroup {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            Log.i(TAG, "handleMessage: "+msg.what);
+            Log.i(TAG, "handleMessage: " + msg.what);
             if (msg.what == REFRESHOVER_HANDLER) {
                 headerRecover();
             } else if (msg.what == LOADOVER_HANDLER) {

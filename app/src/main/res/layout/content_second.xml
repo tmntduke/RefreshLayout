@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
+    android:id="@+id/content_second"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="tmnt.example.refreshlayout.MainActivity">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="tmnt.example.refreshlayout.SecondActivity"
+    tools:showIn="@layout/activity_second">
 
     <tmnt.example.refreshlayout.RefreshLayout.RefreshLayout
-        android:id="@+id/refresh"
+        android:id="@+id/second_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/img"
+        <ListView
+            android:id="@+id/list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#335588"
-            android:src="@drawable/login"/>
+            android:layout_height="match_parent"></ListView>
 
     </tmnt.example.refreshlayout.RefreshLayout.RefreshLayout>
 

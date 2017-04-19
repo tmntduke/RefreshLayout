@@ -1,7 +1,10 @@
 package tmnt.example.refreshlayout;
 
+import android.content.Intent;
+import android.os.Debug;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 
 import tmnt.example.refreshlayout.RefreshLayout.OnRefreshListener;
 import tmnt.example.refreshlayout.RefreshLayout.RefreshLayout;
@@ -15,6 +18,14 @@ public class MainActivity extends AppCompatActivity {
         final RefreshLayout refreshLayout = (RefreshLayout) findViewById(R.id.refresh);
         refreshLayout.setCanLoad(true);
         refreshLayout.setCanRefresh(true);
+
+        findViewById(R.id.img).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+                startActivity(intent);
+            }
+        });
 
         refreshLayout.setOnRefreshListener(new OnRefreshListener() {
             @Override
@@ -37,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
                 refreshLayout.setLoadOver(true);
             }
         });
+
 
     }
 }

@@ -128,28 +128,37 @@ public class RefreshLayout extends ViewGroup {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        int y = (int) ev.getRawY();
-        int x = (int) ev.getRawX();
+
         boolean resume = false;
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 // 发生down事件时,记录y坐标
-                mLastMotionY = y;
-                mLastMotionX = x;
+                mLastMotionY = (int) ev.getRawY();
+                mLastMotionX = (int) ev.getRawX();
                 resume = false;
                 break;
             case MotionEvent.ACTION_MOVE:
                 View v = getChildAt(0);
                 if (v instanceof AbsListView) {
+                    Log.i(TAG, "onInterceptTouchEvent: " + (ev.getRawY() - mLastMotionY));
                     AbsListView absListView = (AbsListView) v;
-                    if (absListView.getFirstVisiblePosition() == 0 ||
-                            absListView.getLastVisiblePosition() == absListView.getAdapter().getCount() - 1) {
+                    if (ev.getRawY() - mLastMotionY > 0 && absListView.getFirstVisiblePosition() == 0) {
                         resume = true;
+                    } else if (ev.getRawY() - mLastMotionY < 0
+                            && absListView.getLastVisiblePosition() == absListView.getAdapter().getCount() - 1) {
+                        Log.i(TAG, "onInterceptTouchEvent: " + absListView.getLastVisiblePosition() + " real:" + absListView.getAdapter().getCount());
+                        resume = true;
+                    } else {
+                        resume = false;
                     }
                 } else if (v instanceof RecyclerView) {
                     RecyclerView recyclerView = (RecyclerView) v;
-                    if (!recyclerView.canScrollVertically(1) || !recyclerView.canScrollVertically(-1)) {
+                    if (ev.getRawY() - mLastMotionY > 0 && !recyclerView.canScrollVertically(1)) {
                         resume = true;
+                    } else if (ev.getRawY() - mLastMotionY < 0 && !recyclerView.canScrollVertically(-1)) {
+                        resume = true;
+                    } else {
+                        resume = false;
                     }
                 }
 
